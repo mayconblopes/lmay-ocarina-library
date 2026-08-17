@@ -1,0 +1,23 @@
+---
+const baseUrl = import.meta.env.BASE_URL;
+---
+
+<header class="border-b border-border bg-background">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+    <a
+      href={baseUrl}
+      class="font-serif text-xl font-semibold tracking-tight text-foreground"
+    >
+      L.May Ocarina Library
+    </a>
+
+    <nav aria-label="Navegação principal">
+      <a
+        href={`${baseUrl}/artigos/`}
+        class="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+      >
+        Artigos
+      </a>
+    </nav>
+  </div>
+</header>

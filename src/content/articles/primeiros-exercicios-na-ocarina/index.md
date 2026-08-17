@@ -1,0 +1,35 @@
+---
+title: 'Primeiros exercícios na ocarina'
+description: 'Exercícios simples para começar a desenvolver controle das notas e dos dedos.'
+tags:
+  - exercicios
+  - tecnica
+  - iniciante
+related:
+  - escala-maior-na-ocarina
+  - postura-e-embocadura
+---
+
+# Primeiros exercícios na ocarina
+
+Depois de conhecer algumas notas e desenvolver uma postura confortável, podemos começar a praticar pequenos exercícios.
+
+## Exercício 1 — notas consecutivas
+
+Comece executando uma sequência simples.
+
+O objetivo é produzir cada nota com clareza.
+
+<!-- Imagem de teste será adicionada posteriormente. -->
+
+## Pratique lentamente
+
+Não é necessário começar rapidamente.
+
+Uma execução lenta e consistente é muito mais útil para desenvolver coordenação.
+
+## Próximo passo
+
+Depois de dominar exercícios simples, podemos começar a trabalhar escalas completas.
+
+[Estudar a escala maior na ocarina](../escala-maior-na-ocarina/)

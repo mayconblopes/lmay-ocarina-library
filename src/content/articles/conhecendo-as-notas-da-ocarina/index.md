@@ -1,0 +1,35 @@
+---
+title: 'Conhecendo as notas da ocarina'
+description: 'Uma introdução às notas disponíveis em uma ocarina de 12 furos.'
+tags:
+  - notas
+  - teoria-musical
+  - iniciante
+related:
+  - escala-maior-na-ocarina
+  - primeiros-exercicios-na-ocarina
+---
+
+# Conhecendo as notas da ocarina
+
+Antes de estudar escalas e exercícios, é importante conhecer as notas que podem ser produzidas pela ocarina.
+
+Neste artigo vamos observar a relação entre as notas musicais e as digitações do instrumento.
+
+## A extensão do instrumento
+
+Uma ocarina de 12 furos possui uma extensão que permite executar diversas melodias.
+
+A disposição das notas depende do modelo e da afinação do instrumento.
+
+## Um primeiro contato
+
+O objetivo neste momento não é decorar toda a extensão.
+
+Comece reconhecendo as notas mais utilizadas e associe cada uma delas à sua digitação.
+
+<!-- Imagem de teste será adicionada posteriormente. -->
+
+Depois de conhecer as notas básicas, podemos começar a trabalhar com escalas.
+
+[Estude a escala maior na ocarina](../escala-maior-na-ocarina/)

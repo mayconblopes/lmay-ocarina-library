@@ -1,0 +1,52 @@
+---
+import { CollectionEntry } from 'astro:content'
+
+interface RelatedArticle {
+  id: string
+  title: string
+  description: string
+}
+
+interface Props {
+  articles: RelatedArticle[]
+}
+
+type Article = CollectionEntry<'articles'>
+const { articles } = Astro.props
+---
+
+{
+  articles.length > 0 && (
+    <aside
+      class='my-14 rounded-lg border border-border bg-primary-soft/40 p-6 sm:p-8'
+      aria-label='Conteúdos relacionados'
+    >
+      <p class='text-xs font-semibold uppercase tracking-[0.18em] text-primary'>
+        Continue estudando
+      </p>
+
+      <h2 class='mt-2 font-serif text-2xl font-semibold tracking-tight'>
+        Conteúdos relacionados
+      </h2>
+
+      <div class='mt-6 space-y-5'>
+        {articles.map((article: Article) => (
+          <div>
+            <h3 class='font-serif text-lg font-semibold'>
+              <a
+                href={`${import.meta.env.BASE_URL}/artigos/${article.id}/`}
+                class='transition-colors hover:text-primary'
+              >
+                {article.title}
+              </a>
+            </h3>
+
+            <p class='mt-1 text-sm leading-6 text-muted-foreground'>
+              {article.description}
+            </p>
+          </div>
+        ))}
+      </div>
+    </aside>
+  )
+}

@@ -1,23 +1,117 @@
 ---
+import { CollectionEntry, getCollection } from 'astro:content'
+import BaseLayout from '../layouts/BaseLayout.astro'
 
+const articles = await getCollection('articles')
+
+const recentArticles = articles.slice(0, 3)
+
+type Article = CollectionEntry<'articles'>
 ---
 
-<html lang='pt-BR'>
-  <head>
-    <meta charset='UTF-8' />
-    <meta name='viewport' content='width=device-width' />
-    <title>L.May Ocarina Library</title>
-  </head>
+<BaseLayout
+  title='L.May Ocarina Library'
+  description='Biblioteca de conhecimento sobre ocarina.'
+>
+  <div class='space-y-20'>
+    <!-- Introdução -->
 
-  <body>
-    <main>
-      <h1>L.May Ocarina Library</h1>
-
-      <p>Biblioteca de conhecimento sobre ocarina.</p>
-
-      <p>
-        <a href={`${import.meta.env.BASE_URL}/artigos/`}> Ver artigos </a>
+    <section class='max-w-3xl'>
+      <p
+        class='mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-primary'
+      >
+        Biblioteca de conhecimento sobre ocarina
       </p>
-    </main>
-  </body>
-</html>
+
+      <h1
+        class='text-4xl font-semibold tracking-tight text-foreground sm:text-5xl'
+      >
+        Aprenda ocarina com conhecimento, prática e música.
+      </h1>
+
+      <p class='mt-6 max-w-2xl text-lg leading-8 text-muted-foreground'>
+        Um espaço dedicado ao estudo da ocarina, reunindo teoria musical,
+        técnica, exercícios, digitações e conteúdos para ajudar você a
+        compreender e tocar melhor o instrumento.
+      </p>
+
+      <div class='mt-8'>
+        <a
+          href={`${import.meta.env.BASE_URL}/artigos/`}
+          class='inline-flex items-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:opacity-90'
+        >
+          Explorar artigos
+        </a>
+      </div>
+    </section>
+
+    <!-- Conteúdos recentes -->
+
+    <section>
+      <div class='flex items-end justify-between gap-6'>
+        <div>
+          <p
+            class='text-sm font-semibold uppercase tracking-[0.18em] text-primary'
+          >
+            Biblioteca
+          </p>
+
+          <h2 class='mt-2 font-serif text-3xl font-semibold tracking-tight'>
+            Conteúdos recentes
+          </h2>
+        </div>
+
+        <a
+          href={`${import.meta.env.BASE_URL}/artigos/`}
+          class='hidden text-sm font-medium text-primary transition-colors hover:opacity-80 sm:block'
+        >
+          Ver todos
+        </a>
+      </div>
+
+      <div class='mt-8 grid gap-6 md:grid-cols-3'>
+        {
+          recentArticles.map((article: Article) => (
+            <article class='group rounded-lg border border-border bg-surface p-6 transition-shadow hover:shadow-sm'>
+              <div class='flex h-full flex-col'>
+                <div>
+                  <h3 class='font-serif text-xl font-semibold tracking-tight'>
+                    <a
+                      href={`${import.meta.env.BASE_URL}/artigos/${article.id}/`}
+                      class='transition-colors group-hover:text-primary'
+                    >
+                      {article.data.title}
+                    </a>
+                  </h3>
+
+                  <p class='mt-3 text-sm leading-6 text-muted-foreground'>
+                    {article.data.description}
+                  </p>
+                </div>
+
+                {article.data.tags.length > 0 && (
+                  <div class='mt-6 flex flex-wrap gap-2'>
+                    {article.data.tags.slice(0, 3).map((tag: string) => (
+                      <span class='rounded-full bg-primary-soft px-2.5 py-1 text-xs font-medium text-primary'>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class='mt-8 sm:hidden'>
+        <a
+          href={`${import.meta.env.BASE_URL}/artigos/`}
+          class='text-sm font-medium text-primary'
+        >
+          Ver todos os artigos →
+        </a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

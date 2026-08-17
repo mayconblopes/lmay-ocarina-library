@@ -1,11 +1,15 @@
-import { defineConfig } from "astro/config";
-import react from "@astrojs/react";
+import { defineConfig } from 'astro/config'
+import react from '@astrojs/react'
+import mdx from "@astrojs/mdx";
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  //O site informa ao Astro qual será o endereço público.
-  site: "https://mayconblopes.github.io",
+  site: 'https://mayconblopes.github.io',
+  base: '/lmay-ocarina-library',
 
-  //O base informa que a aplicação não estará na raiz do domínio
-  base: "/lmay-ocarina-library",
-  integrations: [react()],
-});
+  integrations: [react(), mdx()],
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
+})
