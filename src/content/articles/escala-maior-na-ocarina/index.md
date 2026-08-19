@@ -1,15 +1,9 @@
 ---
 title: "Escala maior na ocarina"
 description: "Uma introdução ao estudo das escalas maiores na ocarina."
-tags:
-  - escalas
-  - teoria-musical
-  - iniciante
-cover: "./escala-maior.webp"
-related:
-  - conhecendo-as-notas-da-ocarina
-  - primeiros-exercicios-na-ocarina
-  - postura-e-embocadura
+tags: []
+cover: "././escala-maior.webp"
+related: []
 ---
 
 # Escala maior na ocarina
