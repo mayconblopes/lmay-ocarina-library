@@ -1,5 +1,5 @@
 const articleAssets = import.meta.glob(
-  '/src/content/articles/**/*.{png,jpg,jpeg,webp,avif,gif}',
+  '/src/content/articles/**/*.{png,jpg,jpeg,webp,avif,gif,bmp}',
   {
     eager: true,
     query: '?url',

@@ -2,6 +2,7 @@
 import { CollectionEntry, getCollection, render } from 'astro:content'
 import RelatedArticles from '../../components/RelatedArticles.astro'
 import BaseLayout from '../../layouts/BaseLayout.astro'
+import YouTube from '../../components/YouTube.astro'
 import { resolveArticleAsset } from '../../lib/article-assets'
 
 type Article = CollectionEntry<'articles'>
@@ -116,7 +117,7 @@ const relatedArticles = article.data.related
         prose-blockquote:text-muted-foreground
         prose-li:leading-8'
     >
-      <Content />
+      <Content components={{ YouTube }} />
     </div>
 
     <!-- Conteúdos relacionados -->
