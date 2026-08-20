@@ -5,10 +5,7 @@ import { expandRepeats } from '../../../lib/tablature/expandRepeats'
 import { buildPlaybackEvents } from '../../../lib/tablature/buildPlaybackEvents'
 import { PlaybackEngine } from '../../../lib/tablature/PlaybackEngine'
 
-import {
-  startOcarinaNote,
-  type PlayingNote,
-} from './OcarinaSynth'
+import { startOcarinaNote, type PlayingNote } from './OcarinaSynth'
 
 import type { Token } from '../../../lib/tablature/token'
 
@@ -21,6 +18,9 @@ interface OcarinaTabPlayerProps {
 
 type NoteToken = Extract<Token, { kind: 'note' }>
 
+const MIN_BPM = 40
+const MAX_BPM = 200
+
 export default function OcarinaTabPlayer({
   value,
   bpm = 100,
@@ -28,6 +28,7 @@ export default function OcarinaTabPlayer({
   selectedTokenIndex = null,
 }: OcarinaTabPlayerProps) {
   const [playing, setPlaying] = useState(false)
+  const [currentBpm, setCurrentBpm] = useState(bpm)
 
   const engineRef = useRef<PlaybackEngine | null>(null)
   const currentNoteRef = useRef<PlayingNote | null>(null)
@@ -36,8 +37,8 @@ export default function OcarinaTabPlayer({
     const tokens = parseTextToTokens(value)
     const items = expandRepeats(tokens)
 
-    return buildPlaybackEvents(items, bpm, 'seminima')
-  }, [value, bpm])
+    return buildPlaybackEvents(items, currentBpm, 'seminima')
+  }, [value, currentBpm])
 
   useEffect(() => {
     engineRef.current?.stop()
@@ -60,10 +61,7 @@ export default function OcarinaTabPlayer({
         const durationMs = event.durationMs
 
         void (async () => {
-          const note = await startOcarinaNote(
-            noteKey,
-            durationMs,
-          )
+          const note = await startOcarinaNote(noteKey, durationMs)
 
           currentNoteRef.current = note
 
@@ -134,8 +132,14 @@ export default function OcarinaTabPlayer({
     onActiveTokenChange?.(null)
   }
 
+  function handleBpmChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const value = Number(event.currentTarget.value)
+
+    setCurrentBpm(value)
+  }
+
   return (
-    <div className='mt-5 flex items-center gap-2'>
+    <div className='mt-5 flex flex-wrap items-center gap-3'>
       {!playing ? (
         <button
           type='button'
@@ -162,9 +166,29 @@ export default function OcarinaTabPlayer({
         ■ Stop
       </button>
 
-      <span className='ml-2 text-sm text-muted-foreground'>
-        {bpm} BPM
-      </span>
+      <div className='ml-2 flex items-center gap-2'>
+        <label
+          htmlFor='ocarina-tab-bpm'
+          className='text-sm font-medium text-muted-foreground'
+        >
+          BPM
+        </label>
+
+        <input
+          id='ocarina-tab-bpm'
+          type='range'
+          min={MIN_BPM}
+          max={MAX_BPM}
+          step='1'
+          value={currentBpm}
+          onChange={handleBpmChange}
+          className='w-32'
+        />
+
+        <span className='w-10 text-right text-sm tabular-nums text-muted-foreground'>
+          {currentBpm}
+        </span>
+      </div>
     </div>
   )
 }
