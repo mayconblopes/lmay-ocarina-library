@@ -12,10 +12,20 @@ const MIN_FONT_SIZE = 24
 const MAX_FONT_SIZE = 64
 const DEFAULT_FONT_SIZE = 64
 
-export default function OcarinaTab({ value, title }: OcarinaTabProps) {
+
+export default function OcarinaTab({
+  value,
+  title,
+}: OcarinaTabProps) {
   const tokens = parseOcarinaTab(value)
 
   const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE)
+  const [selectedTokenIndex, setSelectedTokenIndex] =
+    useState<number | null>(null)
+  const [activeTokenIndex, setActiveTokenIndex] =
+    useState<number | null>(null)
+
+  const isPlaying = activeTokenIndex !== null
 
   return (
     <figure className='my-10 overflow-x-auto rounded-2xl border border-border bg-surface px-6 py-5 shadow-sm'>
@@ -56,16 +66,42 @@ export default function OcarinaTab({ value, title }: OcarinaTabProps) {
         className='flex flex-wrap items-center gap-x-3 gap-y-2'
         style={{ fontSize: `${fontSize}px` }}
       >
+      
         {tokens.map((token, index) => {
           switch (token.kind) {
             case 'note': {
               const note = findOcarinaNote(token.value)
 
+              const isSelected =
+                selectedTokenIndex === index
+
+              const isActive =
+                activeTokenIndex === index
+
               return (
                 <span
                   key={index}
-                  className='inline-flex items-center text-foreground'
+                  onClick={() => {
+                    if (!isPlaying) {
+                      setSelectedTokenIndex(index)
+                    }
+                  }}
+                  className={[
+                    'relative inline-flex items-center text-foreground',
+                    'cursor-pointer select-none',
+                    'rounded-md transition-colors',
+                    isActive
+                      ? 'bg-emerald-100/80 px-1.5 py-0.5 ring-1 ring-emerald-300/80 dark:bg-emerald-100/40 dark:ring-emerald-700'
+                      : 'px-1.5 py-0.5',
+                  ].join(' ')}
                 >
+                  {!isPlaying && isSelected && (
+                    <span
+                      aria-hidden='true'
+                      className='pointer-events-none absolute -top-2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-emerald-600'
+                    />
+                  )}
+
                   {note ? (
                     <span
                       className='font-ocarina'
@@ -131,7 +167,10 @@ export default function OcarinaTab({ value, title }: OcarinaTabProps) {
 
             case 'newline':
               return (
-                <span key={index} className='basis-full h-0' />
+                <span
+                  key={index}
+                  className='basis-full h-0'
+                />
               )
 
             case 'colon':
@@ -176,7 +215,12 @@ export default function OcarinaTab({ value, title }: OcarinaTabProps) {
           }
         })}
       </div>
-      <OcarinaTabPlayer value={value} />
+
+      <OcarinaTabPlayer
+        value={value}
+        selectedTokenIndex={selectedTokenIndex}
+        onActiveTokenChange={setActiveTokenIndex}
+      />
     </figure>
   )
 }

@@ -10,14 +10,22 @@ import {
   type PlayingNote,
 } from './OcarinaSynth'
 
+import type { Token } from '../../../lib/tablature/token'
+
 interface OcarinaTabPlayerProps {
   value: string
   bpm?: number
+  onActiveTokenChange?: (sourceIndex: number | null) => void
+  selectedTokenIndex?: number | null
 }
+
+type NoteToken = Extract<Token, { kind: 'note' }>
 
 export default function OcarinaTabPlayer({
   value,
   bpm = 100,
+  onActiveTokenChange,
+  selectedTokenIndex = null,
 }: OcarinaTabPlayerProps) {
   const [playing, setPlaying] = useState(false)
 
@@ -39,16 +47,22 @@ export default function OcarinaTabPlayer({
 
     const engine = new PlaybackEngine(events, {
       onEvent(_, event) {
+        if (event.moveCursor) {
+          onActiveTokenChange?.(event.sourceIndex)
+        }
+
         if (event.token.kind !== 'note') {
           return
         }
 
-        const noteToken = event.token
+        const noteToken: NoteToken = event.token
+        const noteKey = noteToken.key
+        const durationMs = event.durationMs
 
         void (async () => {
           const note = await startOcarinaNote(
-            noteToken.key,
-            event.durationMs,
+            noteKey,
+            durationMs,
           )
 
           currentNoteRef.current = note
@@ -67,6 +81,7 @@ export default function OcarinaTabPlayer({
 
       onEnd() {
         setPlaying(false)
+        onActiveTokenChange?.(null)
       },
     })
 
@@ -78,7 +93,7 @@ export default function OcarinaTabPlayer({
       currentNoteRef.current?.stop()
       currentNoteRef.current = null
     }
-  }, [events])
+  }, [events, onActiveTokenChange])
 
   function play() {
     const engine = engineRef.current
@@ -91,7 +106,11 @@ export default function OcarinaTabPlayer({
       engine.stop()
     }
 
-    engine.play()
+    if (engine.getCurrentIndex() === 0 && selectedTokenIndex != null) {
+      engine.play(selectedTokenIndex)
+    } else {
+      engine.play()
+    }
 
     setPlaying(true)
   }
@@ -112,6 +131,7 @@ export default function OcarinaTabPlayer({
     currentNoteRef.current = null
 
     setPlaying(false)
+    onActiveTokenChange?.(null)
   }
 
   return (
@@ -120,7 +140,7 @@ export default function OcarinaTabPlayer({
         <button
           type='button'
           onClick={play}
-          className='rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90'
+          className='rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90'
         >
           ▶ Play
         </button>

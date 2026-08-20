@@ -11,7 +11,25 @@
 @import "@fontsource/fraunces/600.css";
 @import "@fontsource/fraunces/700.css";
 
+@font-face {
+  font-family: 'Open12Ocarina';
+  src: url('../assets/fonts/Open-12-Hole-Ocarina-2.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NotoMusic';
+  src: url('../assets/fonts/NotoMusic-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
+  --font-ocarina: 'Open12Ocarina', sans-serif;
+  --font-noto-music: 'NotoMusic', sans-serif;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-serif: 'Fraunces', Georgia, serif;
 
