@@ -3,9 +3,72 @@ import type { NoteId } from '../../lib/tablature/notes'
 export interface OcarinaNoteGlyph {
   key: string
   glyph: string
-  noteId: NoteId
+  noteId: string
   frequency: number
   altKeys?: string[]
+  
+}
+
+const SOLFEGE_BY_KEY: Record<string, string> = {
+  'a': 'Lá',
+  'a#': 'Lá♯',
+  'bb': 'Si♭',
+
+  'b': 'Si',
+  'cb': 'Dó♭',
+
+  'c': 'Dó',
+  'b#': 'Si♯',
+
+  'c#': 'Dó♯',
+  'db': 'Ré♭',
+
+  'd': 'Ré',
+
+  'd#': 'Ré♯',
+  'eb': 'Mi♭',
+
+  'e': 'Mi',
+  'fb': 'Fá♭',
+
+  'f': 'Fá',
+  'e#': 'Mi♯',
+
+  'f#': 'Fá♯',
+  'gb': 'Sol♭',
+
+  'g': 'Sol',
+
+  'g#': 'Sol♯',
+  'ab': 'Lá♭',
+
+  'A': 'Lá',
+  'A#': 'Lá♯',
+  'Bb': 'Si♭',
+
+  'B:': 'Si',
+  'Cb': 'Dó♭',
+
+  'C': 'Dó',
+  'B#': 'Si♯',
+
+  'C#': 'Dó♯',
+  'Db': 'Ré♭',
+
+  'D': 'Ré',
+
+  'D#': 'Ré♯',
+  'Eb': 'Mi♭',
+
+  'E': 'Mi',
+  'Fb': 'Fá♭',
+
+  'F': 'Fá',
+  'E#': 'Mi♯',
+}
+
+export function getOcarinaSolfegeName(key: string): string | null {
+  return SOLFEGE_BY_KEY[key] ?? null
 }
 
 export const OCARINA_NOTE_GLYPHS: OcarinaNoteGlyph[] = [
@@ -125,7 +188,7 @@ export const OCARINA_NOTE_GLYPHS: OcarinaNoteGlyph[] = [
     glyph: 'P',
     noteId: 'C6',
     frequency: 1046.5,
-    altKeys: ['Db', 'B#'],
+    altKeys: ['B#'],
   },
 
   {

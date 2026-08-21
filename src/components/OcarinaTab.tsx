@@ -1,7 +1,8 @@
 ﻿import { useState } from 'react'
-import { findOcarinaNote } from './ocarina-tab/noteMap'
+import { findOcarinaNote, getOcarinaSolfegeName } from './ocarina-tab/noteMap'
 import { parseOcarinaTab } from './ocarina-tab/parser'
 import OcarinaTabPlayer from './ocarina-tab/playback/OcarinaTabPlayer'
+import DurationFigure from './ocarina-tab/DurationFigure'
 
 interface OcarinaTabProps {
   value: string
@@ -12,18 +13,14 @@ const MIN_FONT_SIZE = 24
 const MAX_FONT_SIZE = 64
 const DEFAULT_FONT_SIZE = 64
 
-
-export default function OcarinaTab({
-  value,
-  title,
-}: OcarinaTabProps) {
+export default function OcarinaTab({ value, title }: OcarinaTabProps) {
   const tokens = parseOcarinaTab(value)
 
   const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE)
-  const [selectedTokenIndex, setSelectedTokenIndex] =
-    useState<number | null>(null)
-  const [activeTokenIndex, setActiveTokenIndex] =
-    useState<number | null>(null)
+  const [selectedTokenIndex, setSelectedTokenIndex] = useState<number | null>(
+    null,
+  )
+  const [activeTokenIndex, setActiveTokenIndex] = useState<number | null>(null)
 
   const isPlaying = activeTokenIndex !== null
 
@@ -49,16 +46,18 @@ export default function OcarinaTab({
           min={MIN_FONT_SIZE}
           max={MAX_FONT_SIZE}
           value={fontSize}
-          onChange={(event) => {
-            const value = Number(event.currentTarget.value)
-
-            setFontSize(value)
+          onChange={event => {
+            setFontSize(Number(event.currentTarget.value))
           }}
           className='w-48'
         />
 
         <span className='w-12 text-right text-sm tabular-nums text-muted-foreground'>
-          {fontSize}px
+          {Math.round(
+            ((fontSize - MIN_FONT_SIZE) / (MAX_FONT_SIZE - MIN_FONT_SIZE)) *
+              99 +
+              1,
+          )}
         </span>
       </div>
 
@@ -66,17 +65,14 @@ export default function OcarinaTab({
         className='flex flex-wrap items-center gap-x-3 gap-y-2'
         style={{ fontSize: `${fontSize}px` }}
       >
-      
         {tokens.map((token, index) => {
           switch (token.kind) {
             case 'note': {
               const note = findOcarinaNote(token.value)
+              const solfegeName = getOcarinaSolfegeName(token.value)
 
-              const isSelected =
-                selectedTokenIndex === index
-
-              const isActive =
-                activeTokenIndex === index
+              const isSelected = selectedTokenIndex === index
+              const isActive = activeTokenIndex === index
 
               return (
                 <span
@@ -87,7 +83,7 @@ export default function OcarinaTab({
                     }
                   }}
                   className={[
-                    'relative inline-flex items-center text-foreground',
+                    'relative inline-flex flex-col items-center',
                     'cursor-pointer select-none',
                     'rounded-md transition-colors',
                     isActive
@@ -102,28 +98,34 @@ export default function OcarinaTab({
                     />
                   )}
 
-                  {note ? (
+                  {/* Digitação + ligadura */}
+                  <span className='inline-flex items-center'>
+                    {note ? (
+                      <span
+                        className='font-ocarina'
+                        style={{ fontSize: `${fontSize}px` }}
+                      >
+                        {note.glyph}
+                      </span>
+                    ) : (
+                      <span className='font-mono text-[0.75em]'>
+                        {token.value}
+                      </span>
+                    )}
+
+                    {token.tieEnd && (
+                      <span className='font-mono text-[0.6em]'>~</span>
+                    )}
+                  </span>
+
+                  {/* Figura musical */}
+                  <DurationFigure duration={token.duration} dotted={false} />
+                  {solfegeName && (
                     <span
-                      className='font-ocarina'
-                      style={{ fontSize: `${fontSize}px` }}
+                      className='font-sans text-[0.32em] font-medium leading-none text-muted-foreground'
+                      aria-hidden='true'
                     >
-                      {note.glyph}
-                    </span>
-                  ) : (
-                    <span className='font-mono text-[0.75em]'>
-                      {token.value}
-                    </span>
-                  )}
-
-                  {token.duration && (
-                    <span className='font-mono text-[0.6em]'>
-                      {token.duration}
-                    </span>
-                  )}
-
-                  {token.tieEnd && (
-                    <span className='font-mono text-[0.6em]'>
-                      ~
+                      {solfegeName}
                     </span>
                   )}
                 </span>
@@ -132,12 +134,16 @@ export default function OcarinaTab({
 
             case 'rest':
               return (
-                <span
-                  key={index}
-                  className='font-mono text-[0.6em] italic text-muted-foreground'
-                >
-                  R{token.duration}
-                </span>
+                <div className='relative inline-flex flex-col items-center'>
+                  <span
+                    key={index}
+                    className='text-[0.6em] text-muted-foreground'
+                  >
+                    ¶P{token.duration}
+                  </span>
+                  {/* Figura musical */}
+                  <DurationFigure duration={token.duration} dotted={false} />
+                </div>
               )
 
             case 'bar':
@@ -161,17 +167,10 @@ export default function OcarinaTab({
               )
 
             case 'space':
-              return (
-                <span key={index} className='w-1' />
-              )
+              return <span key={index} className='w-1' />
 
             case 'newline':
-              return (
-                <span
-                  key={index}
-                  className='basis-full h-0'
-                />
-              )
+              return <span key={index} className='basis-full h-0' />
 
             case 'colon':
               return (
