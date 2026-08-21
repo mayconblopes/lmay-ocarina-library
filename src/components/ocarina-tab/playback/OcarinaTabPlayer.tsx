@@ -21,6 +21,21 @@ type NoteToken = Extract<Token, { kind: 'note' }>
 const MIN_BPM = 40
 const MAX_BPM = 200
 
+function getTempoName(bpm: number) {
+  if (bpm < MIN_BPM || bpm > MAX_BPM) {
+    return 'Fora do intervalo permitido'
+  }
+
+  if (bpm >= 40 && bpm <= 60) return 'Largo'
+  if (bpm >= 61 && bpm <= 76) return 'Adagio'
+  if (bpm >= 77 && bpm <= 108) return 'Andante'
+  if (bpm >= 109 && bpm <= 120) return 'Allegretto'
+  if (bpm >= 121 && bpm <= 168) return 'Allegro'
+  if (bpm >= 169 && bpm <= 200) return 'Presto'
+
+  return 'Indefinido'
+}
+
 export default function OcarinaTabPlayer({
   value,
   bpm = 100,
@@ -185,8 +200,8 @@ export default function OcarinaTabPlayer({
           className='w-32'
         />
 
-        <span className='w-10 text-right text-sm tabular-nums text-muted-foreground'>
-          {currentBpm}
+        <span className='w-25 text-right text-sm tabular-nums text-muted-foreground'>
+          {`${getTempoName(currentBpm)}: ${currentBpm}`}
         </span>
       </div>
     </div>
