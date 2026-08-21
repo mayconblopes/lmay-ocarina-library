@@ -1,5 +1,48 @@
 ---
+import {
+  getTranslations,
+  articlesPath,
+  localeLabels,
+  locales,
+  switchLocalePath,
+  type Locale,
+} from '../lib/i18n'
+import { getCollection } from 'astro:content'
+import { getLocalizedArticles, getTranslation } from '../lib/articles'
+
 const baseUrl = import.meta.env.BASE_URL;
+interface Props {
+  locale?: Locale
+}
+
+const { locale = 'pt-BR' } = Astro.props
+const t = getTranslations(locale)
+const currentPath = Astro.url.pathname.startsWith(baseUrl)
+  ? Astro.url.pathname.slice(baseUrl.length) || '/'
+  : Astro.url.pathname
+const allArticles = await getCollection('articles')
+const articleMatch = currentPath.match(/^\/(?:en\/)?(?:artigos|articles)\/([^/]+)\/?$/)
+const currentArticle = articleMatch
+  ? getLocalizedArticles(allArticles, locale).find(
+      article => article.data.slug === articleMatch[1],
+    )
+  : undefined
+
+function getLanguagePath(option: Locale) {
+  if (!currentArticle) {
+    return switchLocalePath(currentPath, option)
+  }
+
+  const translatedArticle = getTranslation(allArticles, currentArticle, option)
+  if (!translatedArticle) {
+    return articlesPath(option)
+  }
+
+  const article = translatedArticle
+  const segment = option === 'en' ? 'articles' : 'artigos'
+
+  return `${option === 'en' ? '/en' : ''}/${segment}/${article.data.slug}/`
+}
 ---
 
 <header class="border-b border-border bg-background">
@@ -11,13 +54,28 @@ const baseUrl = import.meta.env.BASE_URL;
       L.May Ocarina Library
     </a>
 
-    <nav aria-label="Navegação principal">
+    <nav class="flex items-center gap-5" aria-label={t.articles}>
       <a
-        href={`${baseUrl}/artigos/`}
+        href={`${baseUrl}${articlesPath(locale)}/`}
         class="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
-        Artigos
+        {t.articles}
       </a>
+
+      <label class="flex items-center gap-2 text-sm text-muted-foreground">
+        <span class="sr-only">{t.language}</span>
+        <select
+          aria-label={t.language}
+          onchange={`window.location.href = '${baseUrl}' + this.value`}
+          class="rounded-md border border-border bg-background px-2 py-1 text-sm text-foreground"
+        >
+          {locales.map(option => (
+            <option value={getLanguagePath(option)} selected={option === locale}>
+              {localeLabels[option]}
+            </option>
+          ))}
+        </select>
+      </label>
     </nav>
   </div>
 </header>

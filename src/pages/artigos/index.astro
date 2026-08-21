@@ -1,9 +1,10 @@
 ---
-import { CollectionEntry, getCollection } from 'astro:content'
+import { getCollection, type CollectionEntry } from 'astro:content'
 import BaseLayout from '../../layouts/BaseLayout.astro'
+import { getLocalizedArticles } from '../../lib/articles'
 
 type Article = CollectionEntry<'articles'>
-const articles = await getCollection('articles')
+const articles = getLocalizedArticles(await getCollection('articles'), 'pt-BR')
 ---
 
 <BaseLayout
@@ -42,7 +43,7 @@ const articles = await getCollection('articles')
                   <div class='flex-1'>
                     <h2 class='font-serif text-2xl font-semibold tracking-tight'>
                       <a
-                        href={`${import.meta.env.BASE_URL}/artigos/${article.id}/`}
+                        href={`${import.meta.env.BASE_URL}/artigos/${article.data.slug}/`}
                         class='transition-colors group-hover:text-primary'
                       >
                         {article.data.title}
@@ -66,7 +67,7 @@ const articles = await getCollection('articles')
 
                   <div class='mt-6'>
                     <a
-                      href={`${import.meta.env.BASE_URL}/artigos/${article.id}/`}
+                        href={`${import.meta.env.BASE_URL}/artigos/${article.data.slug}/`}
                       class='text-sm font-semibold text-primary transition-opacity hover:opacity-80'
                     >
                       Ler artigo →

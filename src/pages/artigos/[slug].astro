@@ -1,5 +1,5 @@
 ---
-import { CollectionEntry, getCollection, render } from 'astro:content'
+import { getCollection, render, type CollectionEntry } from 'astro:content'
 import RelatedArticles from '../../components/RelatedArticles.astro'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import YouTube from '../../components/YouTube.astro'
@@ -8,11 +8,13 @@ import { resolveArticleAsset } from '../../lib/article-assets'
 type Article = CollectionEntry<'articles'>
 
 export async function getStaticPaths() {
-  const articles = await getCollection('articles')
+  const articles = (await getCollection('articles')).filter(
+    article => article.data.locale === 'pt-BR',
+  )
 
   return articles.map((article: Article) => ({
     params: {
-      slug: article.id,
+      slug: article.data.slug,
     },
     props: {
       article,
@@ -23,18 +25,26 @@ export async function getStaticPaths() {
 const { article } = Astro.props
 const { Content } = await render(article)
 
-const coverUrl = resolveArticleAsset(article.id, article.data.cover)
+const coverUrl = resolveArticleAsset(article.id.split('/')[0], article.data.cover)
 
 const allArticles = await getCollection('articles')
 
-const relatedArticles = article.data.related
-  .map((id: string) => allArticles.find((item: Article) => item.id === id))
-  .filter((item: Article): item is Article => Boolean(item))
-  .map((item: Article) => ({
-    id: item.id,
-    title: item.data.title,
-    description: item.data.description,
-  }))
+const relatedArticles = article.data.related.flatMap((id: string) => {
+  const item = allArticles.find(
+    (candidate: Article) =>
+      candidate.data.locale === 'pt-BR' && candidate.data.translationKey === id,
+  )
+
+  return item
+    ? [
+        {
+          id: item.data.slug,
+          title: item.data.title,
+          description: item.data.description,
+        },
+      ]
+    : []
+})
 ---
 
 <BaseLayout

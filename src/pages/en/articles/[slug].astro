@@ -1,0 +1,99 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content'
+import RelatedArticles from '../../../components/RelatedArticles.astro'
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import YouTube from '../../../components/YouTube.astro'
+import { resolveArticleAsset } from '../../../lib/article-assets'
+import { getTranslations } from '../../../lib/i18n'
+import { getLocalizedArticles } from '../../../lib/articles'
+
+type Article = CollectionEntry<'articles'>
+
+export async function getStaticPaths() {
+  const articles = getLocalizedArticles(await getCollection('articles'), 'en')
+
+  return articles.map((article: Article) => ({
+    params: { slug: article.data.slug },
+    props: { article },
+  }))
+}
+
+const { article } = Astro.props
+const { Content } = await render(article)
+const t = getTranslations('en')
+const coverUrl = resolveArticleAsset(article.id.split('/')[0], article.data.cover)
+const allArticles = getLocalizedArticles(await getCollection('articles'), 'en')
+const localizedArticles = allArticles
+const relatedArticles = article.data.related.flatMap((id: string) => {
+  const item = localizedArticles.find(
+    (candidate: Article) =>
+      candidate.data.translationKey === id,
+  )
+
+  return item
+    ? [
+        {
+          id: item.data.slug,
+          title: item.data.title,
+          description: item.data.description,
+        },
+      ]
+    : []
+})
+---
+
+<BaseLayout
+  locale='en'
+  title={`${article.data.title} — L.May Ocarina Library`}
+  description={article.data.description}
+>
+  <article class='mx-auto max-w-3xl'>
+    {coverUrl && (
+      <figure class='mb-12 overflow-hidden rounded-2xl border border-border bg-muted'>
+        <img src={coverUrl} alt={article.data.title} class='h-auto w-full object-cover' />
+      </figure>
+    )}
+
+    <header class='mb-12'>
+      <a
+        href={`${import.meta.env.BASE_URL}/en/articles/`}
+        class='text-sm font-medium text-primary transition-opacity hover:opacity-80'
+      >
+        ← {t.backToArticles}
+      </a>
+      <p class='mt-8 text-sm font-semibold uppercase tracking-[0.18em] text-primary'>
+        {t.article}
+      </p>
+      <h1 class='mt-3 font-serif text-4xl font-semibold tracking-tight sm:text-5xl'>
+        {article.data.title}
+      </h1>
+      <p class='mt-5 text-lg leading-8 text-muted-foreground'>
+        {article.data.description}
+      </p>
+      {article.data.tags.length > 0 && (
+        <div class='mt-6 flex flex-wrap gap-2'>
+          {article.data.tags.map((tag: string) => (
+            <span class='rounded-full bg-primary-soft px-2.5 py-1 text-xs font-medium text-primary'>
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <div class='prose prose-lg max-w-none text-foreground prose-headings:font-serif prose-headings:font-semibold prose-headings:tracking-tight prose-h2:mt-12 prose-h2:text-3xl prose-h3:mt-10 prose-h3:text-2xl prose-p:leading-8 prose-p:text-foreground/90 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-blockquote:border-primary prose-blockquote:text-muted-foreground prose-li:leading-8'>
+      <Content components={{ YouTube }} />
+    </div>
+
+    <RelatedArticles articles={relatedArticles} locale='en' />
+
+    <footer class='mt-16 border-t border-border pt-8'>
+      <a
+        href={`${import.meta.env.BASE_URL}/en/articles/`}
+        class='inline-flex items-center text-sm font-semibold text-primary transition-opacity hover:opacity-80'
+      >
+        ← {t.backToArticles}
+      </a>
+    </footer>
+  </article>
+</BaseLayout>

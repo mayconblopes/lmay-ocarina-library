@@ -1,5 +1,5 @@
 ---
-import { CollectionEntry } from 'astro:content'
+import { getTranslations, localizedPath, type Locale } from '../lib/i18n'
 
 interface RelatedArticle {
   id: string
@@ -9,32 +9,34 @@ interface RelatedArticle {
 
 interface Props {
   articles: RelatedArticle[]
+  locale?: Locale
 }
 
-type Article = CollectionEntry<'articles'>
-const { articles } = Astro.props
+const { articles, locale = 'pt-BR' } = Astro.props
+const articleSegment = locale === 'en' ? 'articles' : 'artigos'
+const t = getTranslations(locale)
 ---
 
 {
   articles.length > 0 && (
     <aside
       class='my-14 rounded-lg border border-border bg-primary-soft/40 p-6 sm:p-8'
-      aria-label='Conteúdos relacionados'
+      aria-label={t.relatedContent}
     >
       <p class='text-xs font-semibold uppercase tracking-[0.18em] text-primary'>
-        Continue estudando
+        {t.continueStudying}
       </p>
 
       <h2 class='mt-2 font-serif text-2xl font-semibold tracking-tight'>
-        Conteúdos relacionados
+        {t.relatedContent}
       </h2>
 
       <div class='mt-6 space-y-5'>
-        {articles.map((article: Article) => (
+        {articles.map(article => (
           <div>
             <h3 class='font-serif text-lg font-semibold'>
               <a
-                href={`${import.meta.env.BASE_URL}/artigos/${article.id}/`}
+                href={`${import.meta.env.BASE_URL}${localizedPath(locale, `${articleSegment}/${article.id}`)}/`}
                 class='transition-colors hover:text-primary'
               >
                 {article.title}

@@ -1,8 +1,9 @@
 ---
-import { CollectionEntry, getCollection } from 'astro:content'
+import { getCollection, type CollectionEntry } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
+import { getLocalizedArticles } from '../lib/articles'
 
-const articles = await getCollection('articles')
+const articles = getLocalizedArticles(await getCollection('articles'), 'pt-BR')
 
 const recentArticles = articles.slice(0, 3)
 
@@ -77,7 +78,7 @@ type Article = CollectionEntry<'articles'>
                 <div>
                   <h3 class='font-serif text-xl font-semibold tracking-tight'>
                     <a
-                      href={`${import.meta.env.BASE_URL}/artigos/${article.id}/`}
+                      href={`${import.meta.env.BASE_URL}/artigos/${article.data.slug}/`}
                       class='transition-colors group-hover:text-primary'
                     >
                       {article.data.title}

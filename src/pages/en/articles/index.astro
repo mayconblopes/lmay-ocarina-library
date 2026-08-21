@@ -1,0 +1,65 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content'
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import { getTranslations } from '../../../lib/i18n'
+import { getLocalizedArticles } from '../../../lib/articles'
+
+const t = getTranslations('en')
+const articles = getLocalizedArticles(await getCollection('articles'), 'en')
+type Article = CollectionEntry<'articles'>
+---
+
+<BaseLayout
+  locale='en'
+  title={`Articles — L.May Ocarina Library`}
+  description='Explore articles and content from the L.May Ocarina Library.'
+>
+  <div class='space-y-14'>
+    <header class='max-w-3xl'>
+      <p class='text-sm font-semibold uppercase tracking-[0.18em] text-primary'>
+        {t.library}
+      </p>
+      <h1 class='mt-3 font-serif text-4xl font-semibold tracking-tight sm:text-5xl'>
+        {t.articles}
+      </h1>
+      <p class='mt-5 text-lg leading-8 text-muted-foreground'>
+        {t.libraryDescription}
+      </p>
+    </header>
+
+    <section aria-label='Article list'>
+      {articles.length > 0 ? (
+        <div class='grid gap-6 md:grid-cols-2'>
+          {articles.map((article: Article) => (
+            <article class='group rounded-lg border border-border bg-surface p-7 transition-shadow hover:shadow-sm'>
+              <h2 class='font-serif text-2xl font-semibold tracking-tight'>
+                <a
+                  href={`${import.meta.env.BASE_URL}/en/articles/${article.data.slug}/`}
+                  class='transition-colors group-hover:text-primary'
+                >
+                  {article.data.title}
+                </a>
+              </h2>
+              <p class='mt-3 leading-7 text-muted-foreground'>
+                {article.data.description}
+              </p>
+              <div class='mt-6'>
+                <a
+                  href={`${import.meta.env.BASE_URL}/en/articles/${article.data.slug}/`}
+                  class='text-sm font-semibold text-primary transition-opacity hover:opacity-80'
+                >
+                  {t.readArticle} →
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class='rounded-lg border border-dashed border-border bg-surface-muted px-6 py-12 text-center'>
+          <h2 class='font-serif text-2xl font-semibold'>{t.noArticles}</h2>
+          <p class='mt-3 text-muted-foreground'>{t.newContentSoon}</p>
+        </div>
+      )}
+    </section>
+  </div>
+</BaseLayout>
