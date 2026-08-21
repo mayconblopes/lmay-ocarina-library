@@ -34,6 +34,7 @@ export default function MusicScore({
 }: MusicScoreProps) {
   const scoreCanvasRef = useRef<HTMLDivElement>(null)
   const cursorRef = useRef<HTMLDivElement>(null)
+
   const cursorPositionsRef = useRef<Map<number, CursorPosition>>(new Map())
 
   useEffect(() => {
@@ -47,15 +48,26 @@ export default function MusicScore({
       container.replaceChildren()
       cursorPositionsRef.current.clear()
 
-      const measures = splitMeasures(parseOcarinaTab(value))
-      const layout = createLayout(measures, container.clientWidth, measuresPerLine)
+      const tokens = parseOcarinaTab(value)
+      const measures = splitMeasures(tokens)
+
+      const layout = createLayout(
+        measures,
+        container.clientWidth,
+        measuresPerLine,
+      )
+
+      const scale = Math.min(container.clientWidth / layout.width, 1)
+
       const renderer = new Renderer(container, Renderer.Backends.SVG)
+
       renderer.resize(
         layout.width,
         Math.max(layout.rows.length, 1) * MEASURE_HEIGHT,
       )
 
       const context = renderer.getContext()
+
       const notesBySource = new Map<number, StaveNote>()
 
       layout.rows.forEach((row, rowIndex) => {
@@ -69,25 +81,46 @@ export default function MusicScore({
             timeSignature,
             measures.length,
             measuresPerLine,
+            scale,
             cursorPositionsRef.current,
             notesBySource,
           )
         })
       })
 
+      const svg = container.querySelector('svg')
+
+      if (svg) {
+        const height = Math.max(layout.rows.length, 1) * MEASURE_HEIGHT
+
+        svg.setAttribute('viewBox', `0 0 ${layout.width} ${height}`)
+        svg.setAttribute('width', `${container.clientWidth}`)
+        svg.setAttribute('height', `${height * scale}`)
+      }
+
       drawTies(context, measures, notesBySource)
-      updateCursor(cursorRef.current, cursorPositionsRef.current, activeTokenIndex)
+
+      updateCursor(
+        cursorRef.current,
+        cursorPositionsRef.current,
+        activeTokenIndex,
+      )
     }
 
     render()
+
     const observer = new ResizeObserver(render)
     observer.observe(container)
 
     return () => observer.disconnect()
-  }, [measuresPerLine, timeSignature, value])
+  }, [measuresPerLine, timeSignature, value, activeTokenIndex])
 
   useEffect(() => {
-    updateCursor(cursorRef.current, cursorPositionsRef.current, activeTokenIndex)
+    updateCursor(
+      cursorRef.current,
+      cursorPositionsRef.current,
+      activeTokenIndex,
+    )
   }, [activeTokenIndex])
 
   return (
@@ -96,6 +129,7 @@ export default function MusicScore({
       aria-label='Partitura musical'
     >
       <div ref={scoreCanvasRef} />
+
       <div
         ref={cursorRef}
         className='pointer-events-none absolute z-10 hidden w-0.5 rounded-full bg-emerald-100 shadow-[0_0_0_1px_rgba(5,150,105,0.35)]'
@@ -120,20 +154,18 @@ function drawMeasure(
   timeSignature: string,
   measureCount: number,
   measuresPerLine: number,
+  scale: number,
   cursorPositions: Map<number, CursorPosition>,
   notesBySource: Map<number, StaveNote>,
 ) {
-  const stave = new Stave(
-    column * width,
-    row * MEASURE_HEIGHT + 12,
-    width,
-  )
+  const stave = new Stave(column * width, row * MEASURE_HEIGHT + 12, width)
 
   if (row === 0 && column === 0) {
     stave.addClef('treble', 'default', '8va').addTimeSignature(timeSignature)
   }
 
   applyBarlines(stave, measure, measureCount, measuresPerLine)
+
   applyVolta(stave, measure)
 
   stave.setContext(context).draw()
@@ -143,16 +175,22 @@ function drawMeasure(
   }
 
   const notes = measure.tokens.map(({ token }) => createStaveNote(token))
+
   const [beats, beatValue] = parseTimeSignature(timeSignature)
+
   const voice = new Voice({
-    num_beats: beats,
-    beat_value: beatValue,
+    numBeats: beats,
+    beatValue,
   })
+
   voice.setMode(Voice.Mode.SOFT)
   voice.addTickables(notes)
 
   measure.breathAfter.forEach(sourceIndex => {
-    const noteIndex = measure.tokens.findIndex(item => item.sourceIndex === sourceIndex)
+    const noteIndex = measure.tokens.findIndex(
+      item => item.sourceIndex === sourceIndex,
+    )
+
     const note = notes[noteIndex]
 
     if (note) {
@@ -161,15 +199,18 @@ function drawMeasure(
   })
 
   new Formatter().joinVoices([voice]).format([voice], Math.max(width - 80, 40))
+
   voice.draw(context, stave)
 
-  measure.tokens.forEach(({ token, sourceIndex }, noteIndex) => {
+  measure.tokens.forEach(({ sourceIndex }, noteIndex) => {
     const note = notes[noteIndex]
+
     notesBySource.set(sourceIndex, note)
+
     cursorPositions.set(sourceIndex, {
-      left: note.getAbsoluteX(),
-      top: stave.getYForLine(0) - 14,
-      height: 106,
+      left: note.getAbsoluteX() * scale,
+      top: (stave.getYForLine(0) - 14) * scale,
+      height: 106 * scale,
     })
   })
 }
@@ -181,6 +222,7 @@ function applyBarlines(
   measuresPerLine: number,
 ) {
   const isLast = measure.index === measureCount - 1
+
   const isLineStart = measure.index % measuresPerLine === 0
 
   stave.setBegBarType(
@@ -190,6 +232,7 @@ function applyBarlines(
         ? BarlineType.SINGLE
         : BarlineType.NONE,
   )
+
   stave.setEndBarType(
     measure.endRepeat
       ? BarlineType.REPEAT_END
@@ -207,7 +250,10 @@ function applyVolta(stave: Stave, measure: ScoreMeasure) {
 
 interface ScoreLayout {
   width: number
-  rows: { measure: ScoreMeasure; width: number }[][]
+  rows: {
+    measure: ScoreMeasure
+    width: number
+  }[][]
 }
 
 function createLayout(
@@ -215,39 +261,53 @@ function createLayout(
   containerWidth: number,
   maxMeasuresPerLine: number,
 ): ScoreLayout {
-  const width = Math.max(containerWidth, 1)
-  const rows: ScoreLayout['rows'] = []
-  let row: ScoreLayout['rows'][number] = []
-  let rowWidth = 0
+  const width = Math.max(
+    containerWidth,
+    ...buildRows(measures, maxMeasuresPerLine).map(row =>
+      row.reduce((total, measure) => total + measure.preferredWidth, 0),
+    ),
+    1,
+  )
 
-  measures.forEach(measure => {
-    const preferredWidth = Math.max(150, 70 + measure.length * 28)
-    const shouldWrap =
-      row.length > 0 &&
-      (row.length >= maxMeasuresPerLine || rowWidth + preferredWidth > width)
-
-    if (shouldWrap) {
-      rows.push(row)
-      row = []
-      rowWidth = 0
-    }
-
-    row.push({ measure, width: preferredWidth })
-    rowWidth += preferredWidth
-  })
-
-  if (row.length > 0) {
-    rows.push(row)
-  }
+  const rows = buildRows(measures, maxMeasuresPerLine).map(row =>
+    row.map(item => ({
+      measure: item.measure,
+      width: width / row.length,
+    })),
+  )
 
   rows.forEach(currentRow => {
     const measureWidth = width / currentRow.length
+
     currentRow.forEach(item => {
       item.width = measureWidth
     })
   })
 
-  return { width, rows }
+  return {
+    width,
+    rows,
+  }
+}
+
+function buildRows(
+  measures: ScoreMeasure[],
+  maxMeasuresPerLine: number,
+): { measure: ScoreMeasure; preferredWidth: number }[][] {
+  const rows: { measure: ScoreMeasure; preferredWidth: number }[][] = []
+
+  measures.forEach((measure, index) => {
+    const rowIndex = Math.floor(index / maxMeasuresPerLine)
+    const row = rows[rowIndex] ?? []
+
+    row.push({
+      measure,
+      preferredWidth: Math.max(150, 70 + measure.tokens.length * 28),
+    })
+    rows[rowIndex] = row
+  })
+
+  return rows
 }
 
 function drawTies(
@@ -265,11 +325,16 @@ function drawTies(
     }
 
     const next = notes[index + 1]
+
     const firstNote = notesBySource.get(item.sourceIndex)
+
     const lastNote = next ? notesBySource.get(next.sourceIndex) : undefined
 
     if (next?.token.kind === 'note' && firstNote && lastNote) {
-      new StaveTie({ firstNote, lastNote })
+      new StaveTie({
+        firstNote,
+        lastNote,
+      })
         .setContext(context)
         .draw()
     }
@@ -293,29 +358,40 @@ interface ScoreMeasure {
 
 function splitMeasures(tokens: OcarinaTabToken[]): ScoreMeasure[] {
   const measures: ScoreMeasure[] = []
+
   let current = createMeasure(0)
+
   let lastSourceIndex: number | null = null
 
   tokens.forEach((token, sourceIndex) => {
     if (token.kind === 'bar') {
       if (current.tokens.length > 0 || current.voltaLabel) {
         current.endDouble = tokens[sourceIndex + 1]?.kind === 'bar'
+
         measures.push(current)
+
         current = createMeasure(measures.length)
       } else if (measures.length > 0) {
         measures[measures.length - 1].endDouble = true
       }
+
       return
     }
 
     if (token.kind === 'note' || token.kind === 'rest') {
-      current.tokens.push({ token, sourceIndex })
+      current.tokens.push({
+        token,
+        sourceIndex,
+      })
+
       lastSourceIndex = sourceIndex
+
       return
     }
 
     if (token.kind === 'breath' && lastSourceIndex !== null) {
       current.breathAfter.push(lastSourceIndex)
+
       return
     }
 
@@ -325,6 +401,7 @@ function splitMeasures(tokens: OcarinaTabToken[]): ScoreMeasure[] {
       } else {
         current.endRepeat = true
       }
+
       return
     }
 
@@ -343,7 +420,11 @@ function splitMeasures(tokens: OcarinaTabToken[]): ScoreMeasure[] {
     }
   })
 
-  if (current.tokens.length > 0 || current.voltaLabel || measures.length === 0) {
+  if (
+    current.tokens.length > 0 ||
+    current.voltaLabel ||
+    measures.length === 0
+  ) {
     measures.push(current)
   }
 
@@ -386,6 +467,9 @@ function updateCursor(
 }
 
 function createStaveNote(token: OcarinaTabToken): StaveNote {
+  /*
+   * Rest
+   */
   if (token.kind === 'rest') {
     const note = new StaveNote({
       keys: ['b/4'],
@@ -399,18 +483,39 @@ function createStaveNote(token: OcarinaTabToken): StaveNote {
     return note
   }
 
+  /*
+   * Apenas notas chegam aqui.
+   *
+   * O TypeScript faz o narrowing automaticamente
+   * porque rest foi tratado acima.
+   */
+  if (token.kind !== 'note') {
+    return new StaveNote({
+      keys: ['b/4'],
+      duration: 'q',
+    })
+  }
+
   const mappedNote = findOcarinaNote(token.value)
+
   const pitch = mappedNote?.noteId ?? 'C5'
-  const [rawLetter, octave] = pitch.match(/^([A-G]s?)([0-9])$/i)?.slice(1) ?? [
-    'C',
-    '5',
-  ]
+
+  const match = pitch.match(/^([A-G]s?)([0-9])$/i)
+
+  const [rawLetter, octaveText] = match ? match.slice(1) : ['C', '5']
+
   const letter = rawLetter.replace('s', '#').replace('S', '#')
+
+  const octave = Number(octaveText) - 1
+
   const note = new StaveNote({
-    keys: [`${letter.toLowerCase()}/${Number(octave) - 1}`],
+    keys: [`${letter.toLowerCase()}/${octave}`],
     duration: durationToVexFlow(token.duration),
   })
 
+  /*
+   * Acidentes explícitos da tablatura.
+   */
   if (token.value.includes('#')) {
     note.addModifier(new Accidental('#'), 0)
   } else if (token.value.includes('b')) {
@@ -426,6 +531,7 @@ function createStaveNote(token: OcarinaTabToken): StaveNote {
 
 function parseTimeSignature(timeSignature: string): [number, number] {
   const [beatsText, beatValueText] = timeSignature.split('/')
+
   const beats = Number(beatsText)
   const beatValue = Number(beatValueText)
 
@@ -440,12 +546,16 @@ function durationToVexFlow(duration: string): 'w' | 'h' | 'q' | '8' | '16' {
   switch (duration) {
     case '--':
       return 'w'
+
     case '-':
       return 'h'
+
     case '_':
       return '8'
+
     case '__':
       return '16'
+
     default:
       return 'q'
   }

@@ -1,4 +1,3 @@
-
 ---
 title: 'Escala maior na ocarina'
 description: 'Uma introdução ao estudo das escalas maiores na ocarina.'
@@ -40,54 +39,583 @@ Comece lentamente e procure ouvir cada nota antes de avançar para a próxima.
 
 ## Tablatura
 
+{/* ============================================================================
+    TESSITURA E NOTAS NATURAIS
+============================================================================ */}
+
 <OcarinaTab
   client:load
   title='Tessitura completa — A4 a F6'
-  value='a a# b c c# d d# e f f# g g# A A# B C C# D D# E F'
+  value='a b c d e f g A | B C D E F a a# b c | c# d d# e f f# g g# | A A# B C C# D D# E F'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
 />
 
 <OcarinaTab
   client:load
+  title='Escala cromática — primeira oitava'
+  value='a a# b c | c# d d# e | f f# g g# |'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Escala cromática — segunda oitava'
+  value='A A# B C | C# D D# E | F'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    ENARMONIA
+============================================================================ */}
+
+<OcarinaTab
+  client:load
   title='Cromática — primeira oitava — enarmônica'
-  value='a bb cb b# db d eb fb e# gb ab'
+  value='a bb b cb | c db d eb | e fb f gb | g ab'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
 />
 
 <OcarinaTab
   client:load
   title='Cromática — segunda oitava — enarmônica'
-  value='A Bb Cb B# Db D Eb Fb E#'
+  value='A Bb B Cb | C Db D Eb | E Fb F'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Grafias enarmônicas — primeira oitava'
+  value='a# bb | b cb | c b# | c# db | d# eb | e fb | f e# | f# gb | g# ab'
+  timeSignature='4/4'
+  bpm={80}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Grafias enarmônicas — segunda oitava'
+  value='A# Bb | B Cb | C B# | C# Db | D# Eb | E Fb | F E#'
+  timeSignature='4/4'
+  bpm={80}
+  beatUnit='seminima'
 />
 
 <OcarinaTab
   client:load
   title='Teste cromático — grafias enarmônicas'
-  value='a a# bb b cb c b# c# db d d# eb e fb f e# f# gb g g# ab A A# Bb B Cb C B# C# Db D D# Eb E Fb F E#'
+  value='a a# bb b | cb c b# c# | db d d# eb | e fb f e# | f# gb g g# | ab A A# Bb | B Cb C B# | C# Db D D# | Eb E Fb F | E#'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
 />
-
 
 <OcarinaTab
   client:load
   title='Correspondências enarmônicas'
   value='a# bb | b cb | c b# | c# db | d# eb | e fb | f e# | f# gb | g# ab | A# Bb | B Cb | C B# | C# Db | D# Eb | E Fb | F E#'
+  timeSignature='4/4'
+  bpm={80}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    ESCALAS
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='Escala de Dó maior'
+  value='c d e f | g A B C |'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
 />
 
 <OcarinaTab
   client:load
-  title='Teste ligadura'
-  value='a~ a'
+  title='Escala de Sol maior'
+  value='g A B C | D E F# g#'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
 />
-
 
 <OcarinaTab
   client:load
-  title='Teste de playback'
-  value='a bb_ b- c. | db d# e~ eb f#- | A Bb B Cb'
+  title='Escala de Fá maior'
+  value='f g A Bb | C D E F'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
 />
+
+<OcarinaTab
+  client:load
+  title='Escala cromática completa'
+  value='a a# b c | c# d d# e | f f# g g# | A A# B C | C# D D# E | F'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    DIFERENTES FÓRMULAS DE COMPASSO
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='Compasso 2/4 — simples'
+  value='a b | c d | e f | g A'
+  timeSignature='2/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Compasso 3/4 — simples'
+  value='a b c | d e f | g A B | C D E'
+  timeSignature='3/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Compasso 4/4 — simples'
+  value='a b c d | e f g A | B C D E | F a b c'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Compasso 5/4 — irregular'
+  value='a b c d e | f g A B C | D E F a b'
+  timeSignature='5/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Compasso 6/8 — simples'
+  value='a_ b_ c_ d_ e_ f_ | g_ A_ B_ C_ D_ E_'
+  timeSignature='6/8'
+  bpm={120}
+  beatUnit='colcheia'
+/>
+
+<OcarinaTab
+  client:load
+  title='Compasso 9/8 — composto'
+  value='a_ b_ c_ d_ e_ f_ g_ A_ B_ | C_ D_ E_ F_ g_ A_ B_ C_ D_'
+  timeSignature='9/8'
+  bpm={120}
+  beatUnit='colcheia'
+/>
+
+<OcarinaTab
+  client:load
+  title='Compasso 12/8 — composto'
+  value='a_ b_ c_ d_ e_ f_ g_ A_ B_ C_ D_ | E_ F_ a_ b_ c_ d_ e_ f_ g_ A_ B_ C_'
+  timeSignature='12/8'
+  bpm={120}
+  beatUnit='colcheia'
+/>
+
+
+{/* ============================================================================
+    FIGURAS RÍTMICAS
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='Figuras — semibreves'
+  value='a-- | b-- | c-- | d--'
+  timeSignature='4/4'
+  bpm={60}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Figuras — mínimas'
+  value='a- b- | c- d- | e- f- | g- A-'
+  timeSignature='4/4'
+  bpm={80}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Figuras — semínimas'
+  value='a b c d | e f g A | B C D E | F a b c'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Figuras — colcheias'
+  value='a_ b_ c_ d_ e_ f_ g_ A_ | B_ C_ D_ E_ F_ a_ b_ c_'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Figuras — semicolcheias'
+  value='a__ b__ c__ d__ e__ f__ g__ A__ | B__ C__ D__ E__ F__ a__ b__ c__'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    FIGURAS PONTUADAS
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='Semínimas pontuadas em 6/8'
+  value='a. b. | c. d. | e. f. | g. A.'
+  timeSignature='6/8'
+  bpm={80}
+  beatUnit='colcheia'
+/>
+
+<OcarinaTab
+  client:load
+  title='Mínimas pontuadas em 6/4'
+  value='a-. b-. | c-. d-.'
+  timeSignature='6/4'
+  bpm={60}
+  beatUnit='minima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Colcheias pontuadas em 4/4'
+  value='a_. b_ c_. d_ | e_. f_ g_. A_ | B_. C_ D_. E_'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    PAUSAS
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='Pausas de semínima'
+  value='a R b R | c R d R | e R f R | g R A R'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Pausas de colcheia em 6/8'
+  value='a_ R_ b_ c_ R_ d_ | e_ f_ R_ g_ A_ R_'
+  timeSignature='6/8'
+  bpm={120}
+  beatUnit='colcheia'
+/>
+
+<OcarinaTab
+  client:load
+  title='Pausas de mínima'
+  value='a- R- | b- c- | d- R- | e- f-'
+  timeSignature='4/4'
+  bpm={80}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    LIGADURAS
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='Ligadura entre duas semínimas'
+  value='a~ b | c d | e f | g A'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Ligadura através da barra de compasso'
+  value='a~ b c | d e f g | A B C D'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Ligaduras em 6/8'
+  value='a_~ b_ c_ d_ e_ f_ | g_ A_~ B_ C_ D_ E_'
+  timeSignature='6/8'
+  bpm={120}
+  beatUnit='colcheia'
+/>
+
+<OcarinaTab
+  client:load
+  title='Teste de ligadura'
+  value='a~ b | c d | e f | g A'
+  timeSignature='4/4'
+  bpm={80}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    COMBINAÇÃO DE FIGURAS
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='Ritmo misto — 4/4'
+  value='a b_ c_ d | e- f g_ A_ | B__ C__ D__ E | F- a b'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Ritmo misto — 6/8'
+  value='a_ b_ c. d_ | e_ f_ g. A_ | B_ C_ D_ E_ F_ g_'
+  timeSignature='6/8'
+  bpm={120}
+  beatUnit='colcheia'
+/>
+
+<OcarinaTab
+  client:load
+  title='Ritmo misto — 3/4'
+  value='a- b | c. | d_ e_ f | g- A'
+  timeSignature='3/4'
+  bpm={90}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    EXEMPLO MUSICAL REAL
+============================================================================ */}
 
 <OcarinaTab
   client:load
   title='Sorriso Resplandecente'
-  value='D.,D_B_C_D_E_~|E-.R|:gge_f_g_A_|gfed,|eec_d_e_f_|edb|c.b_cA|g-cd_e_|fedc|[1e.d__e__d-]:|[2ddcb|c--||'
+  value='D.,D_B_C_D_E_~ | E-. R | : g g e_ f_ g_ A_ | g f e d , | e e c_ d_ e_ f_ | e d b | c. b_ c A | g- c d_ e_ | f e d c | [1 e. d__ e__ d- ] : | [2 d d c b | c-- ||'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    TESTE DE REPETIÇÃO / VOLTAS
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='Primeira e segunda casa'
+  value='a b c d | e f g A | [1 B C D E | ] : | [2 B C D F | ]'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Repetição com duas alternativas'
+  value='a b c d | e f g A | : [1 B C D E | ] [2 B C D F | ]'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    TESTES DE TONALIDADE
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='Sol maior — armadura com Fá sustenido'
+  value='g A B C | D E F# g | A B C D | E F# g A'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Fá maior — armadura com Si bemol'
+  value='f g A Bb | C D E F | g A Bb C | D E F g'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Ré maior — armadura com Fá e Dó sustenidos'
+  value='d e F# g | A B C# D | E F# g A | B C# D E'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    TESTE DE PLAYBACK
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='Teste de playback'
+  value='a bb b c | db d# e~ eb | f#- g A B | Cb C D E'
+  timeSignature='4/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    6/8 — PADRÕES RÍTMICOS COMPOSTOS
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='6/8 — duas pulsações pontuadas'
+  value='a_ b_ c_ d_ e_ f_ | g_ A_ B_ C_ D_ E_'
+  timeSignature='6/8'
+  bpm={120}
+  beatUnit='colcheia'
+/>
+
+<OcarinaTab
+  client:load
+  title='6/8 — semínimas pontuadas'
+  value='a. d. | g. A. | B. C. | D. E.'
+  timeSignature='6/8'
+  bpm={80}
+  beatUnit='colcheia'
+/>
+
+<OcarinaTab
+  client:load
+  title='6/8 — colcheias e semínimas pontuadas'
+  value='a_ b_ c. | d_ e_ f. | g_ A_ B. | C_ D_ E.'
+  timeSignature='6/8'
+  bpm={120}
+  beatUnit='colcheia'
+/>
+
+
+{/* ============================================================================
+    3/4 — PADRÕES DE VALSA
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='3/4 — padrão de valsa'
+  value='a- b | c d- | e f | g A- | B C | D E-'
+  timeSignature='3/4'
+  bpm={90}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='3/4 — melodia com colcheias'
+  value='a_ b_ c d | e_ f_ g A | B_ C_ D E | F_ a_ b c'
+  timeSignature='3/4'
+  bpm={100}
+  beatUnit='seminima'
+/>
+
+
+{/* ============================================================================
+    COMPASSOS COM PAUSAS E SÍMBOLOS
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='4/4 — notas, pausas e respirações'
+  value='a b , c | R d e , | f g R A | B C , D'
+  timeSignature='4/4'
+  bpm={90}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='6/8 — notas, pausas e respirações'
+  value='a_ b_ , c_ R_ d_ | e_ f_ R_ g_ , A_ | B_ C_ D_ R_ E_ F_'
+  timeSignature='6/8'
+  bpm={120}
+  beatUnit='colcheia'
+/>
+
+
+{/* ============================================================================
+    EXTREMOS DA TESSITURA
+============================================================================ */}
+
+<OcarinaTab
+  client:load
+  title='Extremo grave da ocarina'
+  value='a b c d | e f g A'
+  timeSignature='4/4'
+  bpm={80}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Extremo agudo da ocarina'
+  value='B C D E | F A B C | D E F'
+  timeSignature='4/4'
+  bpm={80}
+  beatUnit='seminima'
+/>
+
+<OcarinaTab
+  client:load
+  title='Extremos da tessitura'
+  value='a-- | F-- | a- b- | E- F-'
+  timeSignature='4/4'
+  bpm={60}
+  beatUnit='seminima'
 />
 
 ---

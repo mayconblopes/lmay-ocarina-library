@@ -1,9 +1,11 @@
 ﻿import { useEffect, useMemo, useRef, useState } from 'react'
+import { Minus, Plus } from 'lucide-react'
 
 import { parseTextToTokens } from '../../../lib/tablature/parser'
 import { expandRepeats } from '../../../lib/tablature/expandRepeats'
 import { buildPlaybackEvents } from '../../../lib/tablature/buildPlaybackEvents'
 import { PlaybackEngine } from '../../../lib/tablature/PlaybackEngine'
+import { usePressAndHold } from '../../../lib/usePressAndHold'
 
 import { startOcarinaNote, type PlayingNote } from './OcarinaSynth'
 
@@ -155,12 +157,15 @@ export default function OcarinaTabPlayer({
     onActiveTokenChange?.(null)
   }
 
-  function handleBpmChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const value = Number(event.currentTarget.value)
+  function handleBpmChange(delta: number) {
+    const value = Math.min(MAX_BPM, Math.max(MIN_BPM, currentBpm + delta))
 
     setCurrentBpm(value)
     onBpmChange?.(value)
   }
+
+  const decreaseBpm = usePressAndHold(() => handleBpmChange(-1))
+  const increaseBpm = usePressAndHold(() => handleBpmChange(1))
 
   return (
     <div className='mt-5 flex flex-wrap items-center gap-3'>
@@ -198,20 +203,34 @@ export default function OcarinaTabPlayer({
           BPM
         </label>
 
-        <input
-          id='ocarina-tab-bpm'
-          type='range'
-          min={MIN_BPM}
-          max={MAX_BPM}
-          step='1'
-          value={currentBpm}
-          onChange={handleBpmChange}
-          className='w-32'
-        />
+        <div className='flex items-center rounded-md border border-border bg-muted/40'>
+          <button
+            type='button'
+            {...decreaseBpm}
+            disabled={currentBpm <= MIN_BPM}
+            className='flex size-7 items-center justify-center text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40'
+            aria-label='Diminuir BPM'
+          >
+            <Minus className='size-3.5' aria-hidden='true' />
+          </button>
 
-        <span className='w-25 text-right text-sm tabular-nums text-muted-foreground'>
-          {`${getTempoName(currentBpm)}: ${currentBpm}`}
-        </span>
+          <span
+            id='ocarina-tab-bpm'
+            className='min-w-24 px-1 text-center text-[11px] tabular-nums text-muted-foreground'
+          >
+            {`${getTempoName(currentBpm)}: ${currentBpm}`}
+          </span>
+
+          <button
+            type='button'
+            {...increaseBpm}
+            disabled={currentBpm >= MAX_BPM}
+            className='flex size-7 items-center justify-center text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40'
+            aria-label='Aumentar BPM'
+          >
+            <Plus className='size-3.5' aria-hidden='true' />
+          </button>
+        </div>
       </div>
     </div>
   )
