@@ -3,6 +3,7 @@ import { findOcarinaNote, getOcarinaSolfegeName } from './ocarina-tab/noteMap'
 import { parseOcarinaTab } from './ocarina-tab/parser'
 import OcarinaTabPlayer from './ocarina-tab/playback/OcarinaTabPlayer'
 import DurationFigure from './ocarina-tab/DurationFigure'
+import MusicScore from './MusicScore'
 
 import type { BeatUnit } from '../lib/tablature/notes'
 
@@ -32,6 +33,8 @@ export default function OcarinaTab({
   const [showSolfege, setShowSolfege] = useState(true)
   const [showDuration, setShowDuration] = useState(true)
   const [currentBpm, setCurrentBpm] = useState(bpm)
+  const [viewMode, setViewMode] = useState<'tab' | 'score'>('tab')
+  const [measuresPerLine, setMeasuresPerLine] = useState(3)
 
   const [selectedTokenIndex, setSelectedTokenIndex] = useState<number | null>(
     null,
@@ -41,7 +44,7 @@ export default function OcarinaTab({
   const isPlaying = activeTokenIndex !== null
 
   return (
-    <figure className='my-10 overflow-x-auto rounded-2xl border border-border bg-surface px-6 py-5 shadow-sm'>
+    <figure className='my-10 rounded-2xl border border-border bg-surface px-6 py-5 shadow-sm'>
       {title && (
         <figcaption className='mb-4 text-sm font-semibold text-foreground'>
           {title}
@@ -75,7 +78,26 @@ export default function OcarinaTab({
       </div>
 
       <div className='mb-5 flex flex-wrap items-center gap-x-6 gap-y-3'>
-        <div className='flex items-center gap-4'>
+        <div className='flex rounded-lg border border-border bg-muted/40 p-1' role='group' aria-label='Modo de exibição'>
+          <button
+            type='button'
+            aria-pressed={viewMode === 'tab'}
+            onClick={() => setViewMode('tab')}
+            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${viewMode === 'tab' ? 'bg-surface text-foreground shadow-sm' : 'text-muted-foreground'}`}
+          >
+            Tablatura
+          </button>
+          <button
+            type='button'
+            aria-pressed={viewMode === 'score'}
+            onClick={() => setViewMode('score')}
+            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${viewMode === 'score' ? 'bg-surface text-foreground shadow-sm' : 'text-muted-foreground'}`}
+          >
+            Partitura
+          </button>
+        </div>
+
+        {viewMode === 'tab' && <div className='flex items-center gap-4'>
           <label
             htmlFor='ocarina-tab-size'
             className='shrink-0 text-sm font-medium text-muted-foreground'
@@ -102,9 +124,9 @@ export default function OcarinaTab({
                 1,
             )}
           </span>
-        </div>
+        </div>}
 
-        <label className='flex cursor-pointer items-center gap-2 text-sm text-muted-foreground'>
+        {viewMode === 'tab' && <label className='flex cursor-pointer items-center gap-2 text-sm text-muted-foreground'>
           <input
             type='checkbox'
             checked={showSolfege}
@@ -112,9 +134,9 @@ export default function OcarinaTab({
             className='h-4 w-4'
           />
           Solfejo
-        </label>
+        </label>}
 
-        <label className='flex cursor-pointer items-center gap-2 text-sm text-muted-foreground'>
+        {viewMode === 'tab' && <label className='flex cursor-pointer items-center gap-2 text-sm text-muted-foreground'>
           <input
             type='checkbox'
             checked={showDuration}
@@ -122,10 +144,35 @@ export default function OcarinaTab({
             className='h-4 w-4'
           />
           Duração
-        </label>
+        </label>}
+
+        {viewMode === 'score' && <div className='flex items-center gap-3'>
+          <label
+            htmlFor='ocarina-score-measures'
+            className='text-sm font-medium text-muted-foreground'
+          >
+            Compassos por linha
+          </label>
+
+          <input
+            id='ocarina-score-measures'
+            type='range'
+            min='1'
+            max='6'
+            value={measuresPerLine}
+            onChange={event => {
+              setMeasuresPerLine(Number(event.currentTarget.value))
+            }}
+            className='w-32'
+          />
+
+          <span className='w-5 text-right text-sm tabular-nums text-muted-foreground'>
+            {measuresPerLine}
+          </span>
+        </div>}
       </div>
 
-      <div
+      {viewMode === 'tab' ? <div
         className='flex flex-wrap items-center gap-x-3 gap-y-2'
         style={{ fontSize: `${fontSize}px` }}
       >
@@ -281,7 +328,12 @@ export default function OcarinaTab({
               )
           }
         })}
-      </div>
+      </div> : <MusicScore
+        value={value}
+        timeSignature={timeSignature}
+        activeTokenIndex={activeTokenIndex}
+        measuresPerLine={measuresPerLine}
+      />}
 
       <OcarinaTabPlayer
         value={value}
