@@ -3,6 +3,8 @@ import { parseNoteDuration } from '../../lib/tablature/duration'
 interface DurationFigureProps {
   duration: string
   dotted: boolean
+  size?: string
+  visualScale?: number
 }
 
 const FIGURES = {
@@ -30,6 +32,8 @@ const FIGURE_SCALE = {
 export default function DurationFigure({
   duration,
   dotted,
+  size = '0.35em',
+  visualScale = 1,
 }: DurationFigureProps) {
   const parsedDuration = parseNoteDuration(duration)
 
@@ -41,14 +45,14 @@ export default function DurationFigure({
   return (
     <span
       aria-hidden='true'
-      className='flex items-center justify-center leading-none'
+      className='inline-flex items-center justify-center leading-none'
     >
       <span
         className='font-noto-music inline-flex items-center'
         style={{
-          fontSize: '0.4em',
+          fontSize: size,
           lineHeight: 1,
-          transform: `scale(${scale})`,
+          transform: `scale(${scale * visualScale})`,
           transformOrigin: 'center center',
         }}
       >

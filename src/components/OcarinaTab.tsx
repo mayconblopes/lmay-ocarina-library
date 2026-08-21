@@ -4,21 +4,34 @@ import { parseOcarinaTab } from './ocarina-tab/parser'
 import OcarinaTabPlayer from './ocarina-tab/playback/OcarinaTabPlayer'
 import DurationFigure from './ocarina-tab/DurationFigure'
 
+import type { BeatUnit } from '../lib/tablature/notes'
+
 interface OcarinaTabProps {
   value: string
   title?: string
+  timeSignature?: string
+  bpm?: number
+  beatUnit?: BeatUnit
 }
 
 const MIN_FONT_SIZE = 24
 const MAX_FONT_SIZE = 64
 const DEFAULT_FONT_SIZE = 64
+const DEFAULT_BPM = 100
 
-export default function OcarinaTab({ value, title }: OcarinaTabProps) {
+export default function OcarinaTab({
+  value,
+  title,
+  timeSignature = '4/4',
+  bpm = DEFAULT_BPM,
+  beatUnit = 'seminima',
+}: OcarinaTabProps) {
   const tokens = parseOcarinaTab(value)
 
   const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE)
   const [showSolfege, setShowSolfege] = useState(true)
   const [showDuration, setShowDuration] = useState(true)
+  const [currentBpm, setCurrentBpm] = useState(bpm)
 
   const [selectedTokenIndex, setSelectedTokenIndex] = useState<number | null>(
     null,
@@ -34,6 +47,32 @@ export default function OcarinaTab({ value, title }: OcarinaTabProps) {
           {title}
         </figcaption>
       )}
+
+      {/* Informações musicais */}
+      <div className='mb-5 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-muted-foreground'>
+        <div className='flex items-center gap-2'>
+          <span className='font-medium'>Compasso</span>
+
+          <span className='flex items-center font-semibold text-foreground'>
+            {timeSignature.split('/')[0]}
+
+            <DurationFigure
+              duration={beatUnit}
+              dotted={false}
+              size='8px'
+              visualScale={1.75}
+            />
+          </span>
+        </div>
+
+        <div className='flex items-center gap-2'>
+          <span className='font-medium'>Andamento</span>
+
+          <span className='flex items-center font-semibold text-foreground'>
+            {getBeatUnitLabel(beatUnit)} = {currentBpm}
+          </span>
+        </div>
+      </div>
 
       <div className='mb-5 flex flex-wrap items-center gap-x-6 gap-y-3'>
         <div className='flex items-center gap-4'>
@@ -146,7 +185,7 @@ export default function OcarinaTab({ value, title }: OcarinaTabProps) {
                   {showDuration && (
                     <DurationFigure duration={token.duration} dotted={false} />
                   )}
-                  
+
                   {showSolfege && solfegeName && (
                     <span
                       className='font-sans text-[0.32em] font-medium leading-none text-muted-foreground'
@@ -161,11 +200,11 @@ export default function OcarinaTab({ value, title }: OcarinaTabProps) {
 
             case 'rest':
               return (
-                <div className='relative inline-flex flex-col items-center'>
-                  <span
-                    key={index}
-                    className='text-[0.6em] text-muted-foreground'
-                  >
+                <div
+                  key={index}
+                  className='relative inline-flex flex-col items-center'
+                >
+                  <span className='text-[0.6em] text-muted-foreground'>
                     ¶P{token.duration}
                   </span>
 
@@ -246,9 +285,31 @@ export default function OcarinaTab({ value, title }: OcarinaTabProps) {
 
       <OcarinaTabPlayer
         value={value}
+        bpm={currentBpm}
+        beatUnit={beatUnit}
+        onBpmChange={setCurrentBpm}
         selectedTokenIndex={selectedTokenIndex}
         onActiveTokenChange={setActiveTokenIndex}
       />
     </figure>
   )
+}
+
+function getBeatUnitLabel(beatUnit: BeatUnit): string {
+  switch (beatUnit) {
+    case 'semibreve':
+      return '𝅝'
+
+    case 'minima':
+      return '𝅗𝅥'
+
+    case 'seminima':
+      return '𝅘𝅥'
+
+    case 'colcheia':
+      return '𝅘𝅥𝅮'
+
+    case 'semicolcheia':
+      return '𝅘𝅥𝅯'
+  }
 }

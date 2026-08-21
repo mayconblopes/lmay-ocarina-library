@@ -8,10 +8,13 @@ import { PlaybackEngine } from '../../../lib/tablature/PlaybackEngine'
 import { startOcarinaNote, type PlayingNote } from './OcarinaSynth'
 
 import type { Token } from '../../../lib/tablature/token'
+import type { BeatUnit } from '../../../lib/tablature/notes'
 
 interface OcarinaTabPlayerProps {
   value: string
   bpm?: number
+  beatUnit?: BeatUnit
+  onBpmChange?: (bpm: number) => void
   onActiveTokenChange?: (sourceIndex: number | null) => void
   selectedTokenIndex?: number | null
 }
@@ -39,11 +42,16 @@ function getTempoName(bpm: number) {
 export default function OcarinaTabPlayer({
   value,
   bpm = 100,
+  beatUnit = 'seminima',
+  onBpmChange,
   onActiveTokenChange,
   selectedTokenIndex = null,
 }: OcarinaTabPlayerProps) {
   const [playing, setPlaying] = useState(false)
   const [currentBpm, setCurrentBpm] = useState(bpm)
+  useEffect(() => {
+    setCurrentBpm(bpm)
+  }, [bpm])
 
   const engineRef = useRef<PlaybackEngine | null>(null)
   const currentNoteRef = useRef<PlayingNote | null>(null)
@@ -52,8 +60,8 @@ export default function OcarinaTabPlayer({
     const tokens = parseTextToTokens(value)
     const items = expandRepeats(tokens)
 
-    return buildPlaybackEvents(items, currentBpm, 'seminima')
-  }, [value, currentBpm])
+    return buildPlaybackEvents(items, currentBpm, beatUnit)
+  }, [value, currentBpm, beatUnit])
 
   useEffect(() => {
     engineRef.current?.stop()
@@ -151,6 +159,7 @@ export default function OcarinaTabPlayer({
     const value = Number(event.currentTarget.value)
 
     setCurrentBpm(value)
+    onBpmChange?.(value)
   }
 
   return (
