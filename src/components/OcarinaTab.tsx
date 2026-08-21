@@ -17,6 +17,9 @@ export default function OcarinaTab({ value, title }: OcarinaTabProps) {
   const tokens = parseOcarinaTab(value)
 
   const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE)
+  const [showSolfege, setShowSolfege] = useState(true)
+  const [showDuration, setShowDuration] = useState(true)
+
   const [selectedTokenIndex, setSelectedTokenIndex] = useState<number | null>(
     null,
   )
@@ -32,33 +35,55 @@ export default function OcarinaTab({ value, title }: OcarinaTabProps) {
         </figcaption>
       )}
 
-      <div className='mb-5 flex items-center gap-4'>
-        <label
-          htmlFor='ocarina-tab-size'
-          className='shrink-0 text-sm font-medium text-muted-foreground'
-        >
-          Tamanho
+      <div className='mb-5 flex flex-wrap items-center gap-x-6 gap-y-3'>
+        <div className='flex items-center gap-4'>
+          <label
+            htmlFor='ocarina-tab-size'
+            className='shrink-0 text-sm font-medium text-muted-foreground'
+          >
+            Tamanho
+          </label>
+
+          <input
+            id='ocarina-tab-size'
+            type='range'
+            min={MIN_FONT_SIZE}
+            max={MAX_FONT_SIZE}
+            value={fontSize}
+            onChange={event => {
+              setFontSize(Number(event.currentTarget.value))
+            }}
+            className='w-48'
+          />
+
+          <span className='w-12 text-right text-sm tabular-nums text-muted-foreground'>
+            {Math.round(
+              ((fontSize - MIN_FONT_SIZE) / (MAX_FONT_SIZE - MIN_FONT_SIZE)) *
+                99 +
+                1,
+            )}
+          </span>
+        </div>
+
+        <label className='flex cursor-pointer items-center gap-2 text-sm text-muted-foreground'>
+          <input
+            type='checkbox'
+            checked={showSolfege}
+            onChange={event => setShowSolfege(event.currentTarget.checked)}
+            className='h-4 w-4'
+          />
+          Solfejo
         </label>
 
-        <input
-          id='ocarina-tab-size'
-          type='range'
-          min={MIN_FONT_SIZE}
-          max={MAX_FONT_SIZE}
-          value={fontSize}
-          onChange={event => {
-            setFontSize(Number(event.currentTarget.value))
-          }}
-          className='w-48'
-        />
-
-        <span className='w-12 text-right text-sm tabular-nums text-muted-foreground'>
-          {Math.round(
-            ((fontSize - MIN_FONT_SIZE) / (MAX_FONT_SIZE - MIN_FONT_SIZE)) *
-              99 +
-              1,
-          )}
-        </span>
+        <label className='flex cursor-pointer items-center gap-2 text-sm text-muted-foreground'>
+          <input
+            type='checkbox'
+            checked={showDuration}
+            onChange={event => setShowDuration(event.currentTarget.checked)}
+            className='h-4 w-4'
+          />
+          Duração
+        </label>
       </div>
 
       <div
@@ -118,9 +143,11 @@ export default function OcarinaTab({ value, title }: OcarinaTabProps) {
                     )}
                   </span>
 
-                  {/* Figura musical */}
-                  <DurationFigure duration={token.duration} dotted={false} />
-                  {solfegeName && (
+                  {showDuration && (
+                    <DurationFigure duration={token.duration} dotted={false} />
+                  )}
+                  
+                  {showSolfege && solfegeName && (
                     <span
                       className='font-sans text-[0.32em] font-medium leading-none text-muted-foreground'
                       aria-hidden='true'
@@ -141,8 +168,10 @@ export default function OcarinaTab({ value, title }: OcarinaTabProps) {
                   >
                     ¶P{token.duration}
                   </span>
-                  {/* Figura musical */}
-                  <DurationFigure duration={token.duration} dotted={false} />
+
+                  {showDuration && (
+                    <DurationFigure duration={token.duration} dotted={false} />
+                  )}
                 </div>
               )
 

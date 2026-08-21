@@ -46,7 +46,7 @@ const SOLFEGE_BY_KEY: Record<string, string> = {
   'A#': 'Lá♯',
   'Bb': 'Si♭',
 
-  'B:': 'Si',
+  'B': 'Si',
   'Cb': 'Dó♭',
 
   'C': 'Dó',
