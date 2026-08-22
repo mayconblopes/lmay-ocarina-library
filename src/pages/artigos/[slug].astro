@@ -9,12 +9,15 @@ type Article = CollectionEntry<'articles'>
 
 export async function getStaticPaths() {
   const articles = (await getCollection('articles')).filter(
-    article => article.data.locale === 'pt-BR',
+    article =>
+      article.data.locale === 'pt-BR' &&
+      typeof article.data.slug === 'string' &&
+      article.data.slug.trim().length > 0,
   )
 
   return articles.map((article: Article) => ({
     params: {
-      slug: article.data.slug,
+      slug: article.data.slug.trim(),
     },
     props: {
       article,
@@ -23,16 +26,22 @@ export async function getStaticPaths() {
 }
 
 const { article } = Astro.props
+
 const { Content } = await render(article)
 
-const coverUrl = resolveArticleAsset(article.id.split('/')[0], article.data.cover)
+const articleDirectory = article.id.split('/')[0]
+
+const coverUrl = resolveArticleAsset(articleDirectory, article.data.cover)
 
 const allArticles = await getCollection('articles')
 
 const relatedArticles = article.data.related.flatMap((id: string) => {
   const item = allArticles.find(
     (candidate: Article) =>
-      candidate.data.locale === 'pt-BR' && candidate.data.translationKey === id,
+      candidate.data.locale === 'pt-BR' &&
+      candidate.data.translationKey === id &&
+      typeof candidate.data.slug === 'string' &&
+      candidate.data.slug.trim().length > 0,
   )
 
   return item
